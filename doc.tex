@@ -1,0 +1,496 @@
+%Dokumenteinstellungen und Anpassungen
+%Dokumentenklasse "scrbook" - Erweitert um den Verweis auf die Verzeichnisse und Texteigenschaften
+\documentclass[chapterprefix=true, 12pt, a4paper, oneside, parskip=half, listof=totoc, bibliography=totoc, numbers=noendperiod]{scrbook}
+
+
+%Anpassung der Seitenränder (Standard bottom ca. 52mm anbzüglich von ca. 4mm für die nach oben rechts gewanderte Seitenzahl)
+\usepackage[bottom=48mm,left=25mm,right=25mm]{geometry}
+
+%Tweaks für scrbook
+\usepackage{scrhack}
+
+%Blindtext
+\usepackage{blindtext}
+
+%Erlaubt unteranderem Umbrücke captions
+\usepackage{caption}
+
+%Stichwortverzeichnis
+\usepackage{imakeidx}
+
+%Kompakte Listen
+\usepackage{paralist}
+
+%Zitate besser formatieren und darstellen
+\usepackage{epigraph}
+
+%Glossar, Stichworverzeichnis (Akronyme werden als eigene Liste aufgeführt)
+\usepackage[toc, acronym]{glossaries} 
+
+%Anpassung von Kopf- und Fußzeile
+%beinflusst die erste Seite des Kapitels
+\usepackage[automark,headsepline]{scrlayer-scrpage}
+\input{resources/styles/header_footer}
+
+%Auskommentieren für die Verkleinerung des vertikalen Abstandes eines neuen Kapitels
+%\renewcommand*{\chapterheadstartvskip}{\vspace*{.25\baselineskip}}
+
+%Zeilenabstand 1,5
+\usepackage[onehalfspacing]{setspace}
+
+%Verbesserte Darstellung der Buchstaben zueinander
+\usepackage[stretch=10]{microtype}
+
+%Deutsche Bezeichnungen für angezeigte Namen (z.B. Innhaltsverzeichnis etc.)
+\usepackage[ngerman]{babel}
+
+%Unterstützung von Umlauten und anderen Sonderzeichen (UTF-8)
+\usepackage{lmodern}
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+
+%Einfachere Zitate
+\usepackage{epigraph}
+
+%Unterstützung der H positionierung (keine automatische Verschiebung eingefügter Elemente)
+\usepackage{float} 
+
+%Erlaubt Umbrüche innerhalb von Tabellen
+\usepackage{tabularx}
+
+%Erlaubt Seitenumbrüche innerhalb von Tabellen
+\usepackage{longtable}
+
+%Erlaubt die Darstellung von Sourcecode mit Highlighting
+\usepackage{listings}
+
+%Definierung eigener Farben bei nutzung eines selbst vergebene Namens
+\usepackage[table,xcdraw]{xcolor}
+
+%Vektorgrafiken
+\usepackage{tikz}
+
+%Grafiken (wie jpg, png, etc.)
+\usepackage{graphicx}
+
+%Grafiken von Text umlaufen lassen
+\usepackage{wrapfig}
+
+%Ermöglicht Verknüpfungen innerhalb des Dokumentes (e.g. for PDF), Links werden durch "hidelink" nicht explizit hervorgehoben
+\usepackage[hidelinks,german]{hyperref}
+
+%Einbindung und Verwaltung von Literaturverzeichnissen
+\usepackage{csquotes} %wird von biber benötigt
+\usepackage[style=alphabetic, backend=biber, bibencoding=ascii]{biblatex}
+\addbibresource{references/references.bib}
+
+\input{resources/styles/adjustments}
+
+%Titelformen - gewünschtes Layout einkommentieren
+
+%%Graduation
+\include{titles/graduation}
+\gradeType{Master of Science (M.Sc.)}
+\secondExaminer{Max Mustermann}
+
+%Research paper
+%\include{titles/research_papger}
+%\subTitle{Ein optionaler Untertitel der Arbeit}
+%\researchPart{A}
+
+%Angaben zur Arbeit und dem Author (von beiden Layouts genutzt)
+\title{Häufigkeitsbrechnung von Wörtern mit Apache Spark}
+\author{Marvin Krüger}
+\matrikelnr{s0556109}
+\submitDate{WS 20/21}
+\firstExaminer{Marvin Krüger}
+
+%Verzeichnisse generieren
+\makeglossaries
+\loadglsentries{references/glossary_acronyms.tex}
+\setacronymstyle{long-short}
+
+\makeindex[columns=2, title=Stichwortverzeichnis, options= -s resources/styles/indexstyle.ist, intoc]
+\indexsetup{level=\chapter*,toclevel=chapter}
+
+%Start des Inhalts
+\begin{document}
+
+%Notwendiger Workaround
+\pagenumbering{alph}
+
+%Deckblatt erzeugen
+\maketitle
+
+\pagenumbering{Roman}
+
+%Inhaltsverzeichnis
+\tableofcontents \newpage
+
+%Hauptteil
+\pagenumbering{arabic}
+
+\chapter{Problemstellung} \label{c:beispiele}
+
+\section{Aufgabe}
+In der zu lösenden Aufgabe zum Thema Verarbeitung von Big Data ging es um die Häufigkeiten von Wörtern in Texten. Die Aufgabe war in zwei Teile unterteilt: 
+\begin{itemize}
+    \item Berechnen Sie die Vorkommenshäufigkeit für alle Wörter in den gegebenen Texten
+    \item Stellen Sie die Ergebnisse als TOP 10 Liste getrennt für jede Sprache vor, wobei Stoppwörter ignoriert werden sollen (z.B. in Englisch: a, an, the)
+\end{itemize}
+
+Hierbei sollte das Framework Apache Spark genutzt werden, welches für das Verarbeiten großer Datenmengen in Computer-Clustern genutzt werden kann.
+
+\section{Verfügbare Daten}
+Die zu analysierenden Daten bestanden aus verschiedenen Texten in den Sprachen
+\begin{itemize}
+    \item Dutch
+    \item Englisch
+    \item French
+    \item German
+    \item Italian
+    \item Russian
+    \item Spanish
+    \item Ukrainian 
+\end{itemize}
+
+Die Struktur der Dateien zeigt \autoref{img:ordner}. Je Sprache existiert ein Ordner in dem sich jeweils verschiedene Textdateien mit Texten befinden. 
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{resources/images/screenshot}
+	\caption{Ordnerstruktur}
+	\label{img:ordner}
+\end{figure}
+
+Einen beispielhaften Auszug aus einer Textdatei zeigt \autoref{img:texts}. Hier kann man erkennen, dass die Wörter durch Leerzeichen voneiander getrennt sind.
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{resources/images/text}
+	\caption{Auschnitt aus einer Textdatei}
+	\label{img:texts}
+\end{figure}	
+
+TODO: Evtl. was zu Spark sagen?
+\chapter{Lösung}
+\section{Lösungsbeschreibung}
+\subsection{Map-Reduce}
+Um Wörter in Cluster-Computer Umgebungen unter Verwendung von Spark zu berechnen, wird oft der Map-Reduce-Ansatz verfolgt. Hierbei wird ausgehend von einer Liste mit Wörtern erst eine Map-Funktion angewendet, die jedem Wort ein Tupel aus (Wort, 1) zuordnet. Das Wort \"One\" wird zu (\"One\", 1) gemappt und so weiter. Anschließend wird eine Reduce-Funktion genutzt um die Tupel nach Wörtern zu reduzieren und die Anzahl der Vorkommen dabei zu summieren. In einer Liste ((\"One\", 1), (\"One\", 1)) würde das Ergebnis nach der Ausführen der Reduce-Funktion so aussehen: ((\"One\", 2)). \autoref{img:mapreduce} veranschaulicht dieses Vorgehen anhand einer Grafik.
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{resources/images/mapreduce}
+	\caption{Map-Reduce visualisiert}
+	\label{img:mapreduce}
+\end{figure}
+Abbildung: https://medium.com/@sunitha98selvan/writing-a-simple-word-counter-using-hadoop-mapreduce-40c6689b82e6
+
+\subsection{Zählen pro Sprache}
+Zusätzlich zum eigentlichen Zählen der Wörter musste außerdem beachtet werden, dass die Wörter pro Sprache gezählt wurden. Deshalb wurde vor dem Zählen der Wörter eine Liste erstellt, in der Tupel aus (Sprache, Wort) aufgeführt waren. 
+Beispiel: [('English', 'Hey'),
+ ('English', 'this'),
+ ('English', 'is'),
+ ('English', 'a'),
+ ('English', 'test'),
+ ('English', 'because'),
+ ('English', 'you'),
+ ('English', 'never'),
+ ('English', 'know'),
+ ('English', 'Hey'),
+ ('English', 'hey'),
+ ('German', 'Hallo'),
+ ('German', 'das'),
+ ('German', 'ist'),
+ ('German', 'ein'),
+ ('German', 'Test'),
+ ('German', 'test'),
+ ('German', 'Neuer'),
+ ('German', 'der'),
+ ('German', 'so'),
+ ('German', 'tolle'),
+ ('German', 'Test'),
+ ('German', 'hallo')]
+
+ Auf dieser Liste wurde das oben genannte Map-Reduce-Verfahren zum Zählen von Wörtern angewandt. Wobei hier der Schlüssel zum Reduzieren nicht nur das Wort, sondern das Wort und die Sprache darstellten. 
+ 
+ Somit erhält man: 
+ [('English', 'test', 1),
+ ('English', 'never', 1),
+ ('English', 'know', 1),
+ ('German', 'test', 3),
+ ('German', 'neuer', 1),
+ ('German', 'tolle', 1),
+ ('English', 'hey', 3),
+ ('German', 'hallo', 2)]
+ 
+\section{Anderes}
+
+Weiterhin war es wichtig, dass alle Buchstaben in Kleinbuchstaben umgewandelt wurden, da sonst zum Beispiel die Wörter "Das" und "das" separat gezählt worden wären. Auch Mussten aus den Texten alle Stopwörter entfernt werden. 
+
+
+filesByLang = file.map(lambda x: (x[0].split("/")[-2], x[1])).reduceByKey(lambda v1,v2: v1+ " " + v2)
+occurencesPerLanguage = filesByLang.flatMapValues(lambda l: re.findall("\w+", l))\
+        .map(lambda x: (x[0], x[1].lower()))\
+        .filter(lambda x: (x[1] not in get_stop_words(x[0].lower())))\
+        .map(lambda w: ((w[0], w[1]), 1)).reduceByKey(lambda v1,v2: v1+v2)\
+        .map(lambda x: ((x[0][0]), x[0][1], x[1]))\
+        .sortBy(lambda a: a[2], ascending=False)\
+        .map(lambda x: (x[0], (x[1], x[2])))\
+        .groupByKey()
+
+
+occurencesPerLanguage.mapValues(list).collect()
+
+
+
+\section{Implementierung}
+
+Die Implementierung wurde in einem jupyter Notebook in der Programmiersprache Python umgesetzt. Das dazugehörige Github Repository kann hier gefunden werden: https://github.com/marvpaul/spark-count-words
+\subsection{Spark initialisieren}
+\begin{lstlisting}[caption={Spark initialisieren}, captionpos=b, label={lst:spark}]
+from pyspark import SparkContext, SparkConf
+conf = SparkConf().setAppName("Python Spark Count words").setMaster("local[2]")
+sc = SparkContext(conf=conf)   
+\end{lstlisting}
+
+Der  \autoref{lst:spark} zeigt die Initialisierung von pySpark. Hier wird eine Spark-Konfiguration mit dem App-Namen \"Python Spark Count words\" erzeugt. Da die Aufgae auf einem Rechner lokal ausgeführt wurde und hier zwei Prozessorkerne zur Verfügung standen, wird dies mit \".setMaster(\"local[2]\")\" spezifiziert. Mit dieser Konfiguration wird ein Spark Kontext erstellt, in welchem der nachfolgende Code ausgeführt wird.
+\subsection{Einlesen der Datein}
+
+\begin{lstlisting}[caption={Daten einlesen}, captionpos=b, label={lst:input}]
+file = sc.wholeTextFiles("data/texts/*/*.txt")
+filesByLang = file.map(lambda x: (x[0].split("/")[-2], x[1])).reduceByKey(lambda v1,v2: v1+ " " + v2)
+wordsByLang = filesByLang.flatMapValues(lambda l: re.findall("\w+", l))
+\end{lstlisting}
+
+Der \autoref{lst:input} zeigt, wie die einzelnen Dateien eingelesen und pro Sprache in Wörter aufgeteilt werden. 
+Die Methode  wholeTextFiles nimmt ein Verzeichnis (hier mit Wildcards \*) entgegen und gibt eine Liste mit Dateinamen und Inhalt zurück. 
+Beispiel: [('file:/home/jovyan/work/data/test/English/1.txt',
+  'Hey this is a test, because you never know. Hey hey'),
+ ('file:/home/jovyan/work/data/test/German/1.txt',
+  'Hallo, das ist ein Test test.'),
+ ('file:/home/jovyan/work/data/test/German/2.txt',
+  'Neuer der so tolle Test. hallo')]
+  
+Anschließend wird aus dem Dateipfad die Sprache extrahiert (\".map(lambda x: (x[0].split(\"\/\")[-2], x[1]))\") und die Texte aus den verschiedenen Dateien werden pro Sprache zusammengefügt (  reduceByKey(lambda v1,v2: v1+ \" \" + v2). 
+Beispiel: [('English', 'Hey this is a test, because you never know. Hey hey'),
+ ('German', 'Hallo, das ist ein Test test. Neuer der so tolle Test. hallo')]
+ 
+ 
+Die Methode flatMapValues(lambda l: re.findall(\"\\w+\", l)) trennt nun die Texte in einzelne Wörter auf. Hierzu wird ein regulärer Ausdruck verwendet, in dem \\w+ für ein Wort steht. 
+Beispiel: [('English', 'Hey'),
+ ('English', 'this'),
+ ('English', 'is'),
+ ('English', 'a'),
+ ('English', 'test'),
+ ('English', 'because'),
+ ('English', 'you'),
+ ('English', 'never'),
+ ('English', 'know'),
+ ('English', 'Hey'),
+ ('English', 'hey'),
+ ('German', 'Hallo'),
+ ('German', 'das'),
+ ('German', 'ist'),
+ ('German', 'ein'),
+ ('German', 'Test'),
+ ('German', 'test'),
+ ('German', 'Neuer'),
+ ('German', 'der'),
+ ('German', 'so'),
+ ('German', 'tolle'),
+ ('German', 'Test'),
+ ('German', 'hallo')]
+ 
+ \subsection{Preprocessing}
+ \begin{lstlisting}[caption={Vorbereitung}, captionpos=b, label={lst:prep}]
+ preprocessedWords = wordsByLang.map(lambda x: (x[0], x[1].lower()))\
+        .filter(lambda x: (x[1] not in get_stop_words(x[0].lower())))
+\end{lstlisting}
+
+Der \autoref{lst:input} zeigt die Vorverarbeitung der Wörter. In einem ersten Schritt werden alle Buchstaben in Kleinbuchstaben umgewandelt. In einem weiteren Schritt wird die Bibliothek https://pypi.org/project/stop-words/ Stop-words genutzt, um Stop-Words zu filtern. Die Methode get\_stop\_words der Bibliothek erwartet als Input den Namen der Sprache, z.B. english oder german und liefert eine Liste mit Stop-Wörtern für die jeweilige Sprache. Ist ein Wort in der Liste von Stop-Wörtern, wird es herausgefiltert.
+
+
+\subsection{Wörter zählen}
+
+ \begin{lstlisting}[caption={Vorbereitung}, captionpos=b, label={lst:countWords}]
+occurences = preprocessedWords.map(lambda w: ((w[0], w[1]), 1))\
+        .reduceByKey(lambda v1,v2: v1+v2)
+\end{lstlisting}
+
+Der \autoref{lst:countWords} zeigt das zählen von Wörtern (Vgl. Kapitel Map-Reduce). 
+
+Output: 
+[(('English', 'test'), 1),
+ (('English', 'never'), 1),
+ (('English', 'know'), 1),
+ (('German', 'test'), 3),
+ (('German', 'neuer'), 1),
+ (('German', 'tolle'), 1),
+ (('English', 'hey'), 3),
+ (('German', 'hallo'), 2)]
+\subsection{Nachbereitung}
+ \begin{lstlisting}[caption={Vorbereitung}, captionpos=b, label={lst:postp}]
+occurencesPerLanguage = occurences.sortBy(lambda a: a[1], ascending=False)\
+        .filter(lambda x: len(x[0][1]) != 1)\
+        .map(lambda x: (x[0][0], (x[0][1], x[1])))\
+        .groupByKey()
+\end{lstlisting}
+
+
+Nach dem Zählen der Wörter liegen diese in einem ungünstigen Format vor. Der \autoref{lst:postp} zeigt, wie die Wörter der Häufigkeit nach sortiert und pro Sprache gruppiert werden. Als erstes wird nach Häufigkeit absteigend sortiert. Weiterhin kommt es zum Beispiel im Englischen fälschlicherweise zu häufigen Vorkommen des \"Wortes\" s (zum Beispiel durch it's). \"Wörter\" der Länge 1 werden hier also durch den Befehl  .filter(lambda x: len(x[0][1]) != 1) gefiltert.  Um die Einträge jetzt pro Sprache zu gruppieren, muss als erstes die Struktur geändert werden, so dass die Sprache als einzelner Eintrag vorkommt und nicht in einem Tupel ('German', 'hallo'). Der Befehl .map(lambda x: (x[0][0], (x[0][1], x[1]))) macht aus einem Eintrag (('English', 'hey'), 3) den Eintrag 'English', ('hey', 3). Hier kann die Spark Methode groupByKey genutzt werden um abschließend nach Sprache zu grupppieren. Jetzt können die einzelnen Listen pro Sprache mit dem Befehl .mapValues(list).collect() kann man nun die von Spark berechneten Daten erhalten. 
+Beispiel: 
+[('German', [('test', 3), ('hallo', 2), ('neuer', 1), ('tolle', 1)]),
+ ('English', [('hey', 3), ('test', 1), ('never', 1), ('know', 1)])]
+ 
+\subsection{Ausgabe der Ergebnisse}
+Nach Berechnung der Wortvorkommen und entsprechender Nachbereitung können die Top 10 Wörter pro Sprache einfach ausgegeben werden. Siehe \autoref{lst:out}
+
+
+
+ \begin{lstlisting}[caption={Vorbereitung}, captionpos=b, label={lst:out}]
+for languages in occurencesPerLanguageCollected:
+    print(languages[0] + str(languages[1][:10]))
+\end{lstlisting}
+
+
+\section{Ergenis}
+
+Das Ergebnis der Aufgabe zeigt \autoref{img:res}. 
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{resources/images/ergebnisse}. Hier werden pro Sprache die 10 am häufigst vorkommenden Wörter ausgegeben. 
+	\caption{Ergebnisse}
+	\label{img:ordner}
+\end{figure}
+
+\section{Bild}
+
+\begin{wrapfigure}{R}{0.5\textwidth}
+	\centering
+	\includegraphics[width=0.5\textwidth]{resources/images/example}
+	\caption{Beispielbild {\cite{PEXELS2015}}}
+\end{wrapfigure}
+
+Die rechts zu sehende Grafik demonstriert die Möglichkeiten des Paketes \glqq wrapfig\grqq . Grafiken innerhalb einer \glqq wrapfigure\grqq{} können entweder links oder rechts von Text umlaufen werden.
+
+Die nachfolgende \autoref{img:beispielbild} demonstriert die Darstellung\index{Darstellung} eines \glqq *.jpg\grqq{} Bildes innerhalb des Textes (beim Einfügen kann auf die Endung verzichtet werden, solange der Name einzigartig ist). Zusätzlich enthält dieses einen Untertitel der über das bereits verwendete Label verlinkt werden kann. Der Untertitel\index{Untertitel} erscheint im \gls{abbvz}.
+
+\section{Text Formatierungen und sonstiges}
+Dieser Text enthält eine Fußnote\footnote{Fußnoten sind Anmerkungen, die im Druck-Layout aus dem Fließtext ausgelagert werden, um den Text flüssig lesbar zu gestalten.}.
+
+\subsection{Listen}
+Listen könne sowohl mit Bullet points als auch mit Zahlen erstellt werden
+\begin{itemize}
+	\item Eine Liste mit Bullet points
+	\item Ein weiteres Element
+\end{itemize}
+
+\begin{enumerate}
+	\item Eine Liste mit Zahlen
+	\item Ein weiteres Element
+\end{enumerate}
+
+\subsection{Text Hervorhebungen}
+\begin{quote}
+	The problem with internet quotes is that you can't always depend on their accuracy \par\raggedleft--- \textup{Abraham Lincoln, 1864}
+\end{quote}
+
+"Inspirierende Zitate können mit epigraph eingefügt werden
+\epigraph{The problem with internet quotes is that you can't always depend on their accuracy}{Abraham Lincoln, 1864}
+
+Seitenumbrüche können nur direkt nach Text geschrieben werden, sonst lässt sich das Latex nicht mehr compilieren.
+\\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{resources/images/example}
+	\caption{Beispielbild {\cite{PEXELS2015}}}
+	\label{img:beispielbild}
+\end{figure}
+
+\section{Tabelle}
+
+Nachfolgend \autoref{tbl:DigitalesZertifikat}.
+
+\begin{table}[H]
+	\begin{center}
+		\renewcommand{\arraystretch}{1.3}
+		\begin{tabular}{|l|}
+			\hline
+			\textbf{Inhaber:}\\
+			Alice \\ \hline
+			\textbf{Peer (Ersteller):}\\
+			Bob \\ \hline
+			\textbf{Öffentlicher Schlüssel des Inhabers:}\\
+			F2 D2 0E ED FA 4E 9E 0A F2 DD 23 8A 32 44 F3 E9 \\ \hline
+			\textbf{Gültigkeit:}\\
+			2015-07-01 – 2016-06-30 \\ \hline
+		\end{tabular}
+	\end{center}
+	\caption{Digitales Zertifikat}
+	\label{tbl:DigitalesZertifikat}
+\end{table}
+
+\section{Long-Table}
+
+Die \glqq Long-Table\grqq kann über definierte Header und Footer über Seitenumbrüche hinweg angezeigt werden.
+
+\begin{longtable}{|l|l|l|l|}
+	\hline
+	\multicolumn{1}{|c}{\textbf{Version}} & \multicolumn{1}{|c}{\textbf{Codename}} &
+	\multicolumn{1}{|c}{\textbf{API}} &
+	\multicolumn{1}{|c|}{\textbf{Verteilung}} \\ \hline
+	\endfirsthead
+	
+	\multicolumn{4}{c}{Fortsetzung - Verteilung der Androidversionen (Stand 01.02.2016)}\\ \hline
+	\multicolumn{1}{|c}{\textbf{Version}} & \multicolumn{1}{|c}{\textbf{Codename}} &
+	\multicolumn{1}{|c}{\textbf{API}} &
+	\multicolumn{1}{|c|}{\textbf{Verteilung}} \\ \hline 
+	\endhead
+	
+	\multicolumn{4}{c}{Fortsetzung auf nachfolgender Seite}
+	\endfoot
+	
+	\caption{Verteilung der Androidversionen (Stand: 01.02.2016)}
+	\label{tab:androidverteilung}
+	\endlastfoot
+	
+	2.2 & Froyo & 8 & 0.1\%\\ \hline
+	2.3.3 - 2.3.7 & Gingerbread & 10 & 2.7\%\\ \hline
+	4.0.3 - 4.0.4 & Ice Cream Sandwich & 15 & 2.5\%\\ \hline
+	4.1.x & Jelly Bean & 16 & 8.8\%\\ \cline{1-1} \cline{3-4}
+	4.2.x &  & 17 & 11.7\%\\ \cline{1-1} \cline{3-4}
+	4.3 &  & 18 & 3.4\%\\ \hline
+	4.4 & KitKat & 19 & 35.5\%\\ \hline
+	5.0 & Lollipop & 21 & 17.0\%\\ \cline{1-1} \cline{3-4}
+	5.1 &  & 22 & 17.1\%\\ \hline
+	6.0 & Marshmallow & 23 & 1.2\%\\ \hline
+\end{longtable}
+
+\section{Literaturverweis}
+
+Weil für die alte\index{alte} und die neue Rechtschreibung verschiedene Trennregeln\index{Trennregeln} gelten, sind Deutsch mit alter Rechtschreibung und Deutsch mit neuer Rechtschreibung zwei verschiedene Sprachen (\cite{Knappen2009}, S. 192).
+
+
+%Anhang
+\pagenumbering{Alph}
+
+%Abbildungsverzeichnis
+\listoffigures \clearpage
+%Tabellenverzeichnis
+\listoftables \clearpage
+%Quelltextverzeichnis
+\lstlistoflistings \clearpage
+%Stichwortverzeichnis
+\printindex \clearpage
+%Glossar
+\printglossary[title={Glossar}] \clearpage
+%Abkürzungsverzeichnis
+\printglossary[style=dottedlocations,type=\acronymtype,title={Abkürzungsverzeichnis}] \clearpage
+
+%Literaturverzeichnisse (getrennt nach Stichwort)
+\printbibliography[heading=bibintoc, keyword={book}, title={Literaturverzeichnis}]\clearpage
+\printbibliography[heading=bibintoc, keyword={online}, title={Onlinequellen}]\clearpage
+\printbibliography[heading=bibintoc, keyword={image}, title={Bildquellen}]\clearpage
+
+% Anhang
+\input{chapter/Anhang}
+
+% Eigenständigkeitserklärung
+\input{chapter/Eigenstaendigkeitserklaerung}
+
+\end{document}
